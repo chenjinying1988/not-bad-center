@@ -1,0 +1,94 @@
+@CHARSET "UTF-8";
+/*!
+ * @project : yo_mall
+ * @version : 2.0.0
+ * @author  : zhl(zhanhailin@yy.com)
+ * @update	: 2016-2-25 10:35:02
+ * @decription: YoMall's css for jquery gridster
+ */
+.gridster > ul {
+  margin:0;
+  padding:0;
+}
+
+.controls {
+    margin-bottom: 20px;
+}
+
+/*/
+/* gridster
+/*/
+
+.gridster>ul {
+    background-color: inherit;
+    list-style-type: none;
+}
+
+/* .gridster>ul>li {
+    font-size: 1em;
+    font-weight: bold;
+    text-align: center;
+    line-height: 100%;
+} */
+.gridster>ul>li{
+	border-radius : 3px;
+}
+
+.gridster {
+    margin: 0 auto;
+    opacity: .8;
+    -webkit-transition: opacity .6s;
+    -moz-transition: opacity .6s;
+    -o-transition: opacity .6s;
+    -ms-transition: opacity .6s;
+    transition: opacity .6s;
+}
+
+.gridster .gs-w {
+    /* background: #DDD; */
+    background : #fff;
+    /* cursor: pointer; */
+    box-shadow : 2px 2px 2px #aaa;
+	-webkit-box-shadow : 2px 2px 2px #aaa;
+	-moz-box-shadow : 2px 2px 2px #aaa;
+}
+
+.gridster .player .panel {
+    /* background: #BBB; */
+    background: #EFEFEF;
+}
+
+
+.gridster .preview-holder {
+    /* border: none!important;
+    background: red!important; */
+    background-color : #87CEFA;
+	border-color : #87CEFA;
+	opacity : 0.1;
+}
+
+.gridster .panel{
+	height: 100%;
+}
+.gridster .panel-heading{
+	color : #7b8a8b;
+}
+.gridster .panel-heading>span:nth-child(2){
+	visibility : hidden;
+	float: right;
+	cursor: pointer;
+	font-size: 12px;
+	color: #BBB;
+}
+.gridster .panel:HOVER .panel-heading>span:nth-child(2){
+	visibility : visible;
+}
+.gridster .dragging .panel .panel-heading>span:nth-child(2){
+	visibility : hidden;
+}
+.gridster .panel-heading-more:AFTER{
+	content: "更多";
+}
+.gridster .panel-heading-description:AFTER{
+	content: "详情";
+}

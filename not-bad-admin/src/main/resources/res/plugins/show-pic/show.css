@@ -1,0 +1,20 @@
+/* CSS Document */
+body,h1,h2,h3,h4,h5,h6,p,ul,ol,li,form,img,dl,dt,dd,table,th,td,blockquote,fieldset,div,strong,label,em{margin:0;padding:0;border:0;}
+ul,ol,li{list-style:none;}
+
+.showbox{margin: 0 auto;position:relative;}
+.showbox li{ float: left; width: 70px;height: 70px;cursor: pointer; z-index:0; position:relative;margin:3px;}
+.showbox li img{ height: 70px;width: 70px; margin: 0 auto;border: 1px solid #ccc;}
+.showbox li .in{ position: absolute; left: 0; top: 0;width: 70px; }
+.showbox li.on{ z-index:99;}
+.showbox li.on .in{ padding: 5px; border: 1px solid #ccc; position:absolute;z-index:100;}
+.showbox li.on img{ height: auto; margin-bottom: 5px;}
+.image-view{
+	position: absolute;right: 0;top: 0;height: 500px;width: 500px;z-index:10086;display: none;
+}
+.image-view>img{
+	border: 1px solid #ccc;
+	background-color:#fff;
+	max-height: 500px;
+	max-width: 500px;
+}
