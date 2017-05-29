@@ -1,6 +1,8 @@
 package com.jychan.notbad.service;
 
+import com.jychan.notbad.common.Consts;
 import com.jychan.notbad.domain.UserInfo;
+import com.jychan.notbad.exception.ApiParaException;
 import com.jychan.notbad.mapper.RoleInfoMapper;
 import com.jychan.notbad.mapper.UserInfoMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +27,19 @@ public class AccountService {
     public String getToken(String account) {
         // TODO: 2017/5/13 token 考虑使用对象
         return "hello token";
+    }
+
+    public boolean checkExistAccount(String account) {
+        UserInfo userInfo = userInfoMapper.checkAccount(account);
+        return (userInfo != null);
+    }
+    public boolean checkExistPhone(String phone) {
+        UserInfo userInfo = userInfoMapper.checkPhone(phone);
+        return (userInfo != null);
+    }
+    public boolean checkExistMail(String mail) {
+        UserInfo userInfo = userInfoMapper.checkMail(mail);
+        return (userInfo != null);
     }
 
     public boolean register(String account, String nickname, String email, String phone, String password) {

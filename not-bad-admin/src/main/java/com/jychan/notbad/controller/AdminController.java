@@ -1,10 +1,11 @@
 package com.jychan.notbad.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.jychan.notbad.common.Consts;
 import com.jychan.notbad.domain.UserInfo;
-import com.jychan.notbad.mapper.RoleInfoMapper;
+import com.jychan.notbad.exception.ApiParaException;
 import com.jychan.notbad.service.AccountService;
-import com.jychan.notbad.utils.json.JsonUtils;
+import com.jychan.notbad.utils.NotBadApiParaAssert;
 import com.jychan.notbad.utils.ssdb.Md5Utils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -26,18 +27,15 @@ import java.util.Map;
  * mail: 415683089@qq.com
  */
 @Controller
-public class AdminController {
+public class AdminController extends ResponseErrorHandler {
 
-    protected final Logger logger = LoggerFactory.getLogger(getClass());
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private static final String SESSION_ACCESS_TOKEN = "accessToken";
     private static final String SESSION_USER_INFO = "userInfo";
 
     @Autowired
-    RoleInfoMapper roleInfoMapper;
-    @Autowired
     AccountService accountService;
-
 
     @RequestMapping(value = {"/", "/admin"}, produces = {"application/json;charset=UTF-8"})
     public String admin(Model model, HttpSession session) {
@@ -58,42 +56,35 @@ public class AdminController {
      */
     @RequestMapping(value="/login", produces = {"application/json;charset=UTF-8"})
     @ResponseBody
-    public String login(Model model, HttpServletRequest request, HttpSession session, String account, String password) throws JsonProcessingException {
-        // FIXME: 2017/5/13 处理异常抛出后处理
+    public Map<String, Object> login(Model model, HttpServletRequest request, HttpSession session, String account, String password) throws JsonProcessingException {
         Map<String, Object> data = new HashMap<>();
 
-        if (account == null || "".equals(account)) {
-            data.put("code", 0);
-            data.put("message", "账号不能为空");
-            return JsonUtils.toJson(data);
-            // FIXME: 2017/5/13 封装好返回结构
-        }
-        if (password == null || "".equals(password)) {
-            data.put("code", 0);
-            data.put("message", "密码不能为空");
-            return JsonUtils.toJson(data);
-        }
+        NotBadApiParaAssert.isNull(account, "账号不能为空");
+        NotBadApiParaAssert.isNull(password, "密码不能为空");
 
+        // password -> MD5
+        password = Md5Utils.safeToMd5(password);
         UserInfo userInfo = accountService.login(account, password);
         if (userInfo == null) {
-            data.put("code", 0);
-            data.put("message", "账号或密码有误");
-            return JsonUtils.toJson(data);
+            data.put(Consts.Common.STATUS_CODE, Consts.RESPON_CODE.SECURE_ERROR.getCode());
+            data.put(Consts.Common.STATUS_MSG, Consts.RESPON_CODE.SECURE_ERROR.getPrompt());
+            return data;
         }
 
-        logger.info("login success " + userInfo);
+        logger.info("login success " + userInfo.getAccount());
         String token = accountService.getToken(userInfo.getAccount());
         session.setAttribute(SESSION_ACCESS_TOKEN, token);
         session.setAttribute(SESSION_USER_INFO, userInfo);
-        data.put("code", 200);
-        return JsonUtils.toJson(data);
+
+        data.put(Consts.Common.STATUS_CODE, Consts.RESPON_CODE.SUCCESS.getCode());
+        data.put(Consts.Common.STATUS_MSG, Consts.RESPON_CODE.SUCCESS.getPrompt());
+        return data;
     }
 
     @RequestMapping(value="/register", produces = {"application/json;charset=UTF-8"})
     @ResponseBody
-    public String register(Model model, HttpServletRequest request, HttpSession session, @RequestParam Map<String, String> param) throws JsonProcessingException {
+    public Map<String, Object> register(Model model, HttpServletRequest request, HttpSession session, @RequestParam Map<String, String> param) throws JsonProcessingException {
         Map<String, Object> data = new HashMap<>();
-        data.put("code", 0);
 
         String account = param.get("account");
         String nickname = param.get("nickname");
@@ -101,59 +92,42 @@ public class AdminController {
         String phone = param.get("phone");
         String password = param.get("password");
 
-        // TODO: 2017/5/14 使用函数式编程简化代码
-        if (StringUtils.isBlank(account)) {
-            data.put("message", "账号不能为空");
-            return JsonUtils.toJson(data);
-        }
-        if (StringUtils.isBlank(nickname)) {
-            data.put("message", "昵称不能为空");
-            return JsonUtils.toJson(data);
-        }
-        if (StringUtils.isBlank(password)) {
-            data.put("message", "密码不能为空");
-            return JsonUtils.toJson(data);
-        }
+        NotBadApiParaAssert.isNull(account, "账号不能为空");
+        NotBadApiParaAssert.isNull(nickname, "昵称不能为空");
+        NotBadApiParaAssert.isNull(password, "密码不能为空");
+        NotBadApiParaAssert.containsWhitespace(account, "账号不能含有空格");
+        NotBadApiParaAssert.containsWhitespace(nickname, "昵称不能含有空格");
+        NotBadApiParaAssert.containsWhitespace(password, "密码不能含有空格");
+        NotBadApiParaAssert.notNumeric(phone, "手机格式不正确 " + phone);
 
-        if (StringUtils.containsWhitespace(account)) {
-            data.put("message", "账号不能含有空格");
-            return JsonUtils.toJson(data);
+        if (accountService.checkExistAccount(account)) {
+            throw new ApiParaException(Consts.RESPON_CODE.PARAMETER_ERROR.getCode(), "账号已被使用");
         }
-        if (StringUtils.containsWhitespace(nickname)) {
-            data.put("message", "昵称不能含有空格");
-            return JsonUtils.toJson(data);
+        if (!StringUtils.isBlank(phone) && accountService.checkExistPhone(phone)) {
+            throw new ApiParaException(Consts.RESPON_CODE.PARAMETER_ERROR.getCode(), "手机已被使用");
         }
-        if (StringUtils.containsWhitespace(password)) {
-            data.put("message", "密码不能含有空格");
-            return JsonUtils.toJson(data);
-        }
-
-        // TODO: 2017/5/14 检查邮箱格式
-
-        if (!StringUtils.isBlank(phone) && !StringUtils.isNumeric(phone)) {
-            data.put("message", "手机格式不正确 " + phone);
-            return JsonUtils.toJson(data);
+        if (!StringUtils.isBlank(email) && accountService.checkExistMail(email)) {
+            throw new ApiParaException(Consts.RESPON_CODE.PARAMETER_ERROR.getCode(), "邮箱已被使用");
         }
 
         String passwordMd5 = Md5Utils.safeToMd5(password);
         boolean result = accountService.register(account, nickname, email, phone, passwordMd5);
         if (result) {
-            data.put("code", 200);
+            data.put(Consts.Common.STATUS_CODE, Consts.RESPON_CODE.SUCCESS.getCode());
+            data.put(Consts.Common.STATUS_MSG, Consts.RESPON_CODE.SUCCESS.getPrompt());
 
             // TODO: 2017/5/14 添加token 及个人信息
         } else {
-            data.put("code", 0);
-            data.put("message", "注册失败，请稍后重试.");
+            data.put(Consts.Common.STATUS_CODE, Consts.RESPON_CODE.SUCCESS.getCode());
+            data.put(Consts.Common.STATUS_MSG, "注册失败，请稍后重试.");
         }
-        return JsonUtils.toJson(data);
+        return data;
     }
-
-
 
     @RequestMapping("/hello")
     @ResponseBody
     public String hello() {
-        return "hello ..." + roleInfoMapper.findAll();
+        return "hello ..." + accountService.getToken("test1");
     }
 
 }

@@ -39,24 +39,31 @@ public interface Consts {
         String PARAMETER_ERROR = "CODE_PARAMETER_ERROR";
     }
 
-    public enum SC_CODE_MAPPER {
-        SUCCESS("处理成功"),
-        FAIL("处理失败"),
-        UNKNOWN("未知异常"),
-        REQ_ERROR("请求错误"),
-        SECURE_ERROR("认证未通过"),
-        NOT_LOGIN_ERROR("用户未登录"),
-        DATA_FORMAT_ERROR("数据格式错误"),
-        INTERNAL_ERROR("内部错误"),
-        PARAMETER_ERROR("参数%s错误 ") {
+    public enum RESPON_CODE {
+        SUCCESS(200, "处理成功"),
+        FAIL(101, "处理失败"),
+        UNKNOWN(102, "未知异常"),
+        REQ_ERROR(103, "请求错误"),
+        SECURE_ERROR(104, "认证未通过"),
+        NOT_LOGIN_ERROR(105, "用户未登录"),
+        DATA_FORMAT_ERROR(106, "数据格式错误"),
+        INTERNAL_ERROR(107, "内部错误"),
+        PARAMETER_ERROR(108, "参数%s错误 ") {
             public String getPrompt() {
                 return "参数错误";
             }
         };
-
+        private int code;
         private String msg;
-        private SC_CODE_MAPPER(String msg) {
+        private RESPON_CODE(int code, String msg) {
+            this.code = code;
             this.msg = msg;
+        }
+        public int getCode() {
+            return code;
+        }
+        public void setCode(int code) {
+            this.code = code;
         }
         public String getPrompt() {
             return msg;
@@ -64,6 +71,34 @@ public interface Consts {
         public String getPromptWithFormat(Object ... values) {
             return String.format(msg, values);
         }
+
     }
+//
+//    public enum SC_CODE_MAPPER {
+//        SUCCESS("处理成功"),
+//        FAIL("处理失败"),
+//        UNKNOWN("未知异常"),
+//        REQ_ERROR("请求错误"),
+//        SECURE_ERROR("认证未通过"),
+//        NOT_LOGIN_ERROR("用户未登录"),
+//        DATA_FORMAT_ERROR("数据格式错误"),
+//        INTERNAL_ERROR("内部错误"),
+//        PARAMETER_ERROR("参数%s错误 ") {
+//            public String getPrompt() {
+//                return "参数错误";
+//            }
+//        };
+//
+//        private String msg;
+//        private SC_CODE_MAPPER(String msg) {
+//            this.msg = msg;
+//        }
+//        public String getPrompt() {
+//            return msg;
+//        }
+//        public String getPromptWithFormat(Object ... values) {
+//            return String.format(msg, values);
+//        }
+//    }
 
 }

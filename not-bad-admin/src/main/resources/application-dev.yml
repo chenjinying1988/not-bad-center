@@ -1,14 +1,19 @@
 
 server.port: 8093
-#配置模板想到classpath路径，后面须加上"/"
-beetl:
-  templates-path: templates/
-spring:
-  mvc:
-    view:
-#      prefix: /WEB-INF/jsp/
-      suffix: .html
 
+spring.beetl.resourceLoaderPath: classpath:/templates
+#spring.beetl.resourceLoaderPath: file:not-bad-admin/src/main/resources/templates
+#spring.beetl.resourceLoaderPath: file:not-bad-admin/target/classes/templates
+
+#配置模板想到classpath路径，后面须加上"/"
+#beetl:
+#  templates-path: templates/
+#  config:
+#    html-tag-flag: true
+#spring:
+#  mvc:
+#    view:
+#      suffix: .html
 
 notbad:
   durid:

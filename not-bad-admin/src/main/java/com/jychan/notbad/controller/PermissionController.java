@@ -37,7 +37,7 @@ public class PermissionController extends ResponseErrorHandler {
     public ModelAndView queryPermission(HttpSession session) {
         UserInfo userInfo = (UserInfo) session.getAttribute(Consts.LOGIN_USER);
         if (userInfo == null) {
-            throw new SecurityException(Consts.SC.NOT_LOGIN_ERROR, "用户未登录");
+            throw new SecurityException(Consts.RESPON_CODE.NOT_LOGIN_ERROR.getCode(), "用户未登录");
         }
 
         String userMenus = "hello permissions..";

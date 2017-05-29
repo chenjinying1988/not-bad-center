@@ -20,10 +20,10 @@ function loginBiji() {
             "password" : $('#login-password').val()
         },
         success : function(json) {
-            if (json.code === 200) {
+            if (json.statusCode === 200) {
                 location.href = '/admin';
             } else {
-                alert("登录失败: " + json.message);
+                alert("登录失败: " + json.statusMsg);
             }
         }
     });
@@ -57,10 +57,10 @@ function register() {
             "password" : $('#register-password').val()
         },
         success : function(json) {
-            if (json.code === 200) {
+            if (json.statusCode === 200) {
                 location.href = '/admin';
             } else {
-                alert("注册失败: " + json.message);
+                alert("注册失败: " + json.statusMsg);
             }
         }
     });

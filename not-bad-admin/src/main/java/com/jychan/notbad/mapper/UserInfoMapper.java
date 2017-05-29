@@ -27,4 +27,15 @@ public interface UserInfoMapper {
     int addUserInfo(UserInfo userInfo);
 
 
+    @Select("select account, email, phone from user_info " +
+            "where account = #{account} limit 1 ")
+    UserInfo checkAccount(@Param("account") String account);
+
+    @Select("select account, email, phone from user_info " +
+            "where phone = #{phone} limit 1 ")
+    UserInfo checkPhone(@Param("phone") String phone);
+
+    @Select("select account, email, phone from user_info " +
+            "where email = #{email} limit 1 ")
+    UserInfo checkMail(@Param("email") String email);
 }
