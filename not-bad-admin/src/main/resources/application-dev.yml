@@ -52,3 +52,8 @@ notbad:
 
       # 合并多个DruidDataSource的监控数据
       useGlobalDataSourceStat: true
+
+netty:
+  server:
+    host: localhost
+    port: 9999
